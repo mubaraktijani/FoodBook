@@ -1,0 +1,65 @@
+{% extends "layouts/main-layout.html" %}
+
+<!-- page title -->
+{% block title %}Users{% endblock %}
+
+<!-- body content -->
+{% block bodyContent %}
+<section class="panel">
+    <header class="panel-heading">
+        <h4 class="gen-case">Users (0)
+            <a class="btn btn-primary pull-right mail-src-position" href="">Add New User</a>
+        </h4>
+    </header>
+    <div class="panel-body minimal">
+        <table class="table table-inbox table-hover">
+            <tbody>
+                {% for u in users %}
+                <tr class="">
+                    <td class="inbox-small-cells">
+                        <input type="checkbox" class="mail-checkbox">
+                    </td>
+                    <td class="view-message" width="50">
+                        <div class="tm-avatar">
+                            <img src="/static/images/users/thumbs/{{u.avatar}}" rel="" />
+                        </div>
+                    </td>
+                    <td class="view-message">
+                        <a href="{{ url_for('user', uid=u.user_id) }}">{{u.name}}</a>
+                    </td>
+                    <td class="view-message">{{u.card_id}}</td>
+                    <td class="view-message dont-show">
+                        <a href="mail_view.html">{{u.email}}</a>
+                    </td>
+                    <td class="inbox-small-cells">
+                        {% if u.user_role == 1%}
+                        <i class="label label-success">Admin</i>
+                        {% else %}
+                        <i class="label label-primary">user</i>
+                        {% endif %}
+                    </td>
+                    <td class="hidden-xs">
+
+                        {% if trash == 1%}
+                        <a href="{{ url_for('user', uid=u.user_id, status=1, next='users') }}" class="btn btn-danger btn-xs">
+                            <i class="fa fa-ok "> Enable</i>
+                        </a>
+                        {% else %}
+                        <a href="{{ url_for('user', uid=u.user_id, edit=1, next='users') }}" class="btn btn-primary btn-xs">
+                            <i class="fa fa-pencil"> Edit</i>
+                        </a>
+                        <a href="{{ url_for('user', uid=u.user_id, status=0, next='users') }}" class="btn btn-danger btn-xs">
+                            <i class="fa fa-trash-o "> Trash</i>
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="table-inbox-wrap ">
+
+        </div>
+    </div>
+</section>
+{% endblock %}

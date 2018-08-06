@@ -1,0 +1,112 @@
+{% extends "layouts/main-layout.html" %}
+
+<!--script start-->
+{% block script %}
+<script type="text/javascript">
+    $(document).ready(function () {
+        //countTo
+        $('.timer').countTo();
+    });
+</script>
+{{ super() }}
+<!--script end-->
+{% endblock %}
+
+<!--bosy content-->
+{% block bodyContent %}
+
+<!--mini statistics start-->
+{% if page != 'bookings' and auth.user_role == 1 %}
+<div class="row">
+    <div class="col-md-3">
+        <div class="mini-stat clearfix">
+            <span class="mini-stat-icon orange">
+                <i class="fa fa-gavel"></i>
+            </span>
+            <div class="mini-stat-info">
+                <span>320</span>
+                New Order Received
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="mini-stat clearfix">
+            <span class="mini-stat-icon tar">
+                <i class="fa fa-tag"></i>
+            </span>
+            <div class="mini-stat-info">
+                <span>22,450</span>
+                Copy Sold Today
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="mini-stat clearfix">
+            <span class="mini-stat-icon pink">
+                <i class="fa fa-money"></i>
+            </span>
+            <div class="mini-stat-info">
+                <span>{{data.total_menu}}</span>
+                Menus
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="mini-stat clearfix">
+            <span class="mini-stat-icon green">
+                <i class="fa fa-eye"></i>
+            </span>
+            <div class="mini-stat-info">
+                <span>{{data.total_menu}}</span>
+                Users
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+<!--mini statistics end-->
+
+<section class="cart-product row">
+    {% for menu in data.menus %}
+
+    <div class="col-md-3">
+        <div class="ibox">
+            <div class="ibox-content product-box">
+                <div class="product-imitation" style="background-image:url(/static/images/menus/{{menu.photo}})"></div>
+                <div class="product-desc">
+                    <span class="product-price">${{menu.price}}</span>
+                    <a class="product-name">{{menu.name}}</a>
+                    {% if menu.desc != null %}
+                    <div class="small m-t-xs">{{menu.desc}}</div>
+                    {% endif %}
+                    <div class="m-t text-righ">
+                        {% if page == 'bookings' %} {% if menu.status == 0 %}
+                        <i class="label label-primary">pending</i>
+                        {% else %}
+                        <i class="label label-primary">completed</i>
+                        {% endif %} {% else %}
+                        <a href="{{ url_for('order', mid=menu.id, next='welcome') }}" class="btn btn-xs btn-outline btn-primary">Order
+                            <i class="fa fa-shopping-cart"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endfor %}
+</section>
+
+<!--
+<div class="ibox-content">
+
+    <button class="btn btn-primary pull-right">
+        <i class="fa fa fa-shopping-cart"></i> Checkout</button>
+    <button class="btn btn-white">
+        <i class="fa fa-arrow-left"></i> Continue shopping</button>
+
+</div>
+-->
+
+{% endblock %}

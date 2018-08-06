@@ -1,0 +1,94 @@
+{% set body_class = body_class|default('login-body') -%}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="ThemeBucket"> {% block meta %}
+    <meta name="description" content=""> {% endblock %}
+    <link rel="shortcut icon" href="/static/images/favicon.png">
+    <title>{% block title %}Blank{% endblock %}</title>
+
+    <!-- Base Styles -->
+    {% block blankLayoutStyleBefore %}{% endblock %}
+
+    <!--Core CSS -->
+    <link href="/static/bs3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/bootstrap-reset.css" rel="stylesheet">
+    <link href="/static/font-awesome/css/font-awesome.css" rel="stylesheet" />
+
+    <!--icheck-->
+    <link href="/static/js/iCheck/skins/minimal/minimal.css" rel="stylesheet">
+    <link href="/static/js/iCheck/skins/square/square.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/static/css/style.css" rel="stylesheet">
+    <link href="/static/css/style-responsive.css" rel="stylesheet" />
+    <link href="/static/css/custom.css" rel="stylesheet" /> {% block blankLayoutStyleAfter %}{% endblock %} {% block style %}{% endblock %}
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]>
+    <script src="js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+
+</head>
+
+<body class="{{body_class}}">
+
+    {% block body %} {% endblock %}
+
+    <!-- Placed js at the end of the document so the pages load faster -->
+
+    <!--Core js-->
+    <script src="/static/js/jquery.js"></script>
+    <script src="/static/bs3/js/bootstrap.min.js"></script>
+
+    <!--icheck init -->
+    <script src="/static/js/iCheck/jquery.icheck.js"></script>
+    <script src="/static/js/icheck-init.js"></script>
+
+    <script src="/static/js/socket.io.min.js"></script>
+
+    <script type="text/javascript" charset="utf-8">
+        namespace = '/test';
+        var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
+        socket.on('connect', function () {
+            console.log(location.port)
+            socket.emit('my event', {
+                data: 'I\'m connected!'
+            });
+
+        });
+
+        socket.onmessage = function (event) {
+            console.log('event.data');
+        }
+
+        socket.on('paish', function (dar) {
+            console.log(dar);
+            window.location.href = 'http://' + document.domain + ':' + location.port + '/patient/' + dar.data;
+        });
+
+        function clk() {
+            console.log('Click');
+            //window.location.href = 'http://' + document.domain + ':' + location.port + '/patient/1821494164';
+            socket.emit('patientID', {
+                data: 1821494164
+            });
+        }
+    </script>
+
+    {% block blankLayoutScript %}{% endblock %} {% block script %}{% endblock %}
+
+</body>
+
+</html>

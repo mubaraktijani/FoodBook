@@ -1,0 +1,43 @@
+{% extends "layouts/main-layout.html" %}
+
+<!-- page title -->
+{% block title %}Users{% endblock %}
+
+<!-- body content -->
+{% block bodyContent %}
+<section class="panel">
+    <header class="panel-heading">
+        <h4 class="gen-case">Menu Items (34)
+            <a class="btn btn-primary pull-right mail-src-position" href="{{ url_for('new_menu') }}">Add New Item</a>
+        </h4>
+    </header>
+    <div class="panel-body minimal">
+        <div class="row">
+            {% for menu in menus %}
+            <div class="col-md-3">
+                <div class="ibox">
+                    <div class="ibox-content product-box">
+
+                        <div class="product-imitation" style="background-image:url(/static/images/menus/{{menu.photo}})"></div>
+                        <div class="product-desc">
+                            <span class="product-price">${{menu.price}}</span>
+                            <!--<small class="text-muted">Category</small>-->
+                            <a href="#" class="product-name"> {{menu.name}}</a>
+                            {% if menu.desc != null %}
+                            <div class="small m-t-xs">{{menu.desc}}</div>
+                            {% endif %}
+                            <!--<div class="m-t text-righ">
+                                <a href="#" class="btn btn-xs btn-outline btn-primary">order
+                                    <i class="fa fa-long-arrow-right"></i>
+                                </a>
+                            </div>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{% endblock %}

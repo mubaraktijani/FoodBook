@@ -1,0 +1,70 @@
+{% extends "layouts/blank-layout.html" %} {% block title %}Login{% endblock %} {% block body %}
+<div class="container">
+
+    <form class="form-signin" method="POST" action="{{url_for('login')}}">
+        <h2 class="form-signin-heading">sign in now</h2>
+        <div class="login-wrap">
+            <div class="user-login-info" style="margin-bottom: 5px;">
+                {% if get_flashed_messages()[0] %}
+                <div class="alert alert-warning">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    {{ get_flashed_messages()[0] }}
+                </div>
+                {% endif %} {{ form.csrf_token }} {{ form.username(class='form-control', placeholder='Username', autofocus='true') }} {{
+                form.password(class='form-control', placeholder='Password') }}
+            </div>
+
+            <div class="icheck ">
+
+                <div class="square single-row">
+                    <div class="checkbox " style="line-height:23px; padding-left:0px;">
+                        {{ form.remember_me() }}
+                        <label>Remember me </label>
+                    </div>
+                </div>
+            </div>
+            <label class="checkbox">
+                <!--
+                    <span class="pull-right">
+                        <a data-toggle="modal" href="#myModal"> Forgot Password?</a>
+                    </span>
+                -->
+            </label>
+            {{ form.submit(class="btn btn-lg btn-login btn-block") }}
+            <!--
+                <div class="registration">
+                    Don't have an account yet?
+                    <a class="" href="registration.html">
+                        Create an account
+                    </a>
+                </div>
+            -->
+        </div>
+
+        <!-- Modal -->
+        <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="myModal" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Forgot Password ?</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Enter your e-mail address below to reset your password.</p>
+                        <input type="text" name="email" placeholder="Email" autocomplete="off" class="form-control placeholder-no-fix">
+
+                    </div>
+                    <div class="modal-footer">
+                        <button data-dismiss="modal" class="btn btn-default" type="button">Cancel</button>
+                        <button class="btn btn-success" type="button">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- modal -->
+
+    </form>
+
+</div>
+
+{% endblock %}

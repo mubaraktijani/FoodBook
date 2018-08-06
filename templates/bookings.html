@@ -1,0 +1,48 @@
+{% extends "layouts/main-layout.html" %} {% block script %} {{ super() }} {% endblock %} {% block pageHeadTitle %}{{patient.full_name}}{%
+endblock %} {% block bodyContent %}
+<div class="col-lg-6" style="max-width: unset;float: none; margin: 50px auto;">
+    <section class="panel">
+        <div class="panel-body">
+            <h3 style="margin-bottom: 1em;">{{patient.full_name}}</h3>
+            <table class="table table-striped custom-table table-hover">
+                <tr>
+                    <th>Email Address</th>
+                    <td>{{patient.email}}</td>
+                </tr>
+                <tr>
+                    <th>Blood Group</th>
+                    <td>{{patient.blood_group_name}}</td>
+                </tr>
+                <tr>
+                    <th>Height</th>
+                    <td>{{patient.height}}</td>
+                </tr>
+                <tr>
+                    <th>Gender</th>
+                    <td>{{patient.gender}}</td>
+                </tr>
+                <tr>
+                    <th>Phone Number</th>
+                    <td>{{patient.phone_no}}</td>
+                </tr>
+                <tr>
+                    <th>Date of Birth</th>
+                    <td>{{patient.birth_date}}</td>
+                </tr>
+                <tr>
+                    <th>Smoker</th>
+                    <td>{{patient.smoker}}</td>
+                </tr>
+                <tr>
+                    <th>Contact Address</th>
+                    <td>{{patient.address}}</td>
+                </tr>
+                <tr>
+                    <th>Emergency Contact</th>
+                    <td>{{patient.emergency_contact}}</td>
+                </tr>
+            </table>
+        </div>
+    </section>
+</div>
+{% endblock %}

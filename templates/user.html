@@ -1,0 +1,38 @@
+{% extends "layouts/main-layout.html" %}
+
+<!-- page title -->
+{% block title %}{{user.username}}{% endblock %}
+
+<!-- body content -->
+{% block bodyContent %}
+<section class="panel">
+    <header class="panel-heading">
+        <h4 class="gen-case">{{user.name}}</h4>
+    </header>
+    <div class="panel-body minimal">
+        <form action="{{ url_for('users') }}" method="POST">
+            <table class="table table-striped custom-table table-hover">
+                <tr>
+                    <th>Email Address</th>
+                    <td>
+                        {% if edit == '1' %}
+                        <input type="text" value="{{user.email}}" class="form-control" name="email" /> {% else %} {{user.email}} {% endif %}
+                    </td>
+                </tr>
+            </table>
+            {% if edit == '1' %}
+            <button type="submit" class="btn btn-primary">Save</button>
+            {% endif %}
+        </form>
+    </div>
+</section>
+
+<section class="panel">
+    <header class="panel-heading">
+        <h4 class="gen-case">Cart</h4>
+    </header>
+    <div class="panel-body minimal">
+
+    </div>
+</section>
+{% endblock %}
