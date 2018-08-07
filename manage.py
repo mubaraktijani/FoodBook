@@ -22,7 +22,7 @@ from werkzeug.utils import secure_filename
 async_mode = None
 db = SQLAlchemy()
 #serial = serial.Serial('/dev/ttyACM0', 9600)
-#serial = serial.Serial('COM11', 9600)
+serial = serial.Serial('COM11', 9600)
 bootstrap = Bootstrap()
 login_manager = LoginManager()
 
@@ -402,7 +402,7 @@ def page_not_found(e):
 def internal_server_error(e):
     return render_template('errors/500.html'), 500
 
-'''
+''''''
 
 def background_thread():
     while True:
@@ -418,7 +418,7 @@ def test_connect():
         if thread is None:
             thread = socketio.start_background_task(target=background_thread)
     emit('my_response', {'data': 'Connected', 'count': 0})
-'''
+
 
 #manager = Manager(app)
 
