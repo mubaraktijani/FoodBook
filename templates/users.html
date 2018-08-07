@@ -25,7 +25,7 @@
                         </div>
                     </td>
                     <td class="view-message">
-                        <a href="{{ url_for('user', uid=u.user_id) }}">{{u.name}}</a>
+                        <a href="{{ url_for('user', card_id=u.card_id) }}">{{u.name}}</a>
                     </td>
                     <td class="view-message">{{u.card_id}}</td>
                     <td class="view-message dont-show">
@@ -41,14 +41,14 @@
                     <td class="hidden-xs">
 
                         {% if trash == 1%}
-                        <a href="{{ url_for('user', uid=u.user_id, status=1, next='users') }}" class="btn btn-danger btn-xs">
+                        <a href="{{ url_for('user', card_id=u.card_id, status=1, next='users') }}" class="btn btn-danger btn-xs">
                             <i class="fa fa-ok "> Enable</i>
                         </a>
                         {% else %}
-                        <a href="{{ url_for('user', uid=u.user_id, edit=1, next='users') }}" class="btn btn-primary btn-xs">
+                        <a href="{{ url_for('user', card_id=u.card_id, edit=1, next='users') }}" class="btn btn-primary btn-xs">
                             <i class="fa fa-pencil"> Edit</i>
                         </a>
-                        <a href="{{ url_for('user', uid=u.user_id, status=0, next='users') }}" class="btn btn-danger btn-xs">
+                        <a href="{{ url_for('user', card_id=u.card_id, status=0, next='users') }}" class="btn btn-danger btn-xs">
                             <i class="fa fa-trash-o "> Trash</i>
                         </a>
                         {% endif %}

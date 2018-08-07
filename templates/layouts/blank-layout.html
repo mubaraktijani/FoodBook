@@ -57,7 +57,7 @@
     <script src="/static/js/icheck-init.js"></script>
 
     <script src="/static/js/socket.io.min.js"></script>
-
+    <!--
     <script type="text/javascript" charset="utf-8">
         namespace = '/test';
         var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
@@ -75,7 +75,7 @@
 
         socket.on('paish', function (dar) {
             console.log(dar);
-            window.location.href = 'http://' + document.domain + ':' + location.port + '/patient/' + dar.data;
+            window.location.href = 'http://' + document.domain + ':' + location.port + '/user/' + dar.data;
         });
 
         function clk() {
@@ -85,7 +85,7 @@
                 data: 1821494164
             });
         }
-    </script>
+    </script>-->
 
     {% block blankLayoutScript %}{% endblock %} {% block script %}{% endblock %}
 

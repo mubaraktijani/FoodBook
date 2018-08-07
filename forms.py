@@ -31,32 +31,6 @@ class MenuItemForm(FlaskForm):
     photo = FileField('photo', validators=[FileRequired()])
     submit = SubmitField('Add Item')
 
-'''
-class ChangePasswordForm(FlaskForm):
-    password = PasswordField('Password', validators=[Required()])
-    new_password = PasswordField('New Password', validators=[Required()])
-    confirm_password = PasswordField(
-        'Confirm Password', validators=[Required()])
-    submit = SubmitField('Update Password')
-
-class AddPatientForm(FlaskForm):
-    card_id = StringField('Card ID')
-    fullname = StringField('Fullname')
-    address = StringField('Address')
-    phone_no = StringField('Phone No')
-    email = StringField('Email')
-    birth_date = StringField('Date of Birth')
-    gender = SelectField('Gender', choices=[('male', 'Male'), ('female', 'Female')])
-    blood_group = SelectField('Blood Group')
-    height = StringField('height')
-    smoker = StringField('Smoker')
-    emergency_contact = StringField('Emergency Contact')
-    submit = SubmitField('Add New Patient')
-
-
-class StaffSearchForm(FlaskForm):
-    start = StringField('Start', validators=[Required()])
-    end = StringField('End', validators=[Required()])
-    user_id = StringField('Staff ID')
-    submit = SubmitField('Search')
-'''
+class UpdateBalanceForm(FlaskForm):
+    amount = IntegerField('Amount', validators=[Required()])
+    submit = SubmitField('Update')

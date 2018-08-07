@@ -66,6 +66,12 @@
 {% endif %}
 <!--mini statistics end-->
 
+{% if get_flashed_messages()[0] %}
+<script type="text/javascript">
+    alert("{{ get_flashed_messages()[0] }} ")
+</script>
+{% endif %}
+
 <section class="cart-product row">
     {% for menu in data.menus %}
 
@@ -80,11 +86,20 @@
                     <div class="small m-t-xs">{{menu.desc}}</div>
                     {% endif %}
                     <div class="m-t text-righ">
-                        {% if page == 'bookings' %} {% if menu.status == 0 %}
-                        <i class="label label-primary">pending</i>
+                        {% if page == 'bookings' %}
+
+                        <!---->
+                        {% if menu.status == 0 %}
+                        <i class="label label-warning">pending</i>
+                        <a href="{{ url_for('order', mid=menu.id, next='orders', remove=menu.booking_id) }}" class="label label-primary">
+                            <i class="fa fa-trash-o"></i> Remove
+                        </a>
                         {% else %}
                         <i class="label label-primary">completed</i>
-                        {% endif %} {% else %}
+                        {% endif %}
+                        <!---->
+
+                        {% else %}
                         <a href="{{ url_for('order', mid=menu.id, next='welcome') }}" class="btn btn-xs btn-outline btn-primary">Order
                             <i class="fa fa-shopping-cart"></i>
                         </a>

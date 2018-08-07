@@ -131,12 +131,14 @@
                             </li>
                         </ul>
                     </li>
+                    {% endif %}
                     <li class="sub-menu">
                         <a href="javascript:;">
                             <i class="fa fa-laptop"></i>
                             <span>Users</span>
                         </a>
                         <ul class="sub">
+                            {% if auth.user_role == 1 %}
                             <li>
                                 <a href="{{ url_for('users') }}">List</a>
                             </li>
@@ -146,12 +148,15 @@
                             <li>
                                 <a href="{{ url_for('new_user') }}">Add new</a>
                             </li>
+                            {% endif %}
+                            <li>
+                                <a href="{{ url_for('user', card_id=auth.card_id) }}">Account</a>
+                            </li>
                             <li>
                                 <a href="{{ url_for('change_password') }}">Change Password</a>
                             </li>
                         </ul>
                     </li>
-                    {% endif %}
                 </ul>
             </div>
             <!-- sidebar menu end-->

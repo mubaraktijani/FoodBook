@@ -5,34 +5,134 @@
 
 <!-- body content -->
 {% block bodyContent %}
-<section class="panel">
-    <header class="panel-heading">
-        <h4 class="gen-case">{{user.name}}</h4>
-    </header>
-    <div class="panel-body minimal">
-        <form action="{{ url_for('users') }}" method="POST">
-            <table class="table table-striped custom-table table-hover">
-                <tr>
-                    <th>Email Address</th>
-                    <td>
-                        {% if edit == '1' %}
-                        <input type="text" value="{{user.email}}" class="form-control" name="email" /> {% else %} {{user.email}} {% endif %}
-                    </td>
-                </tr>
-            </table>
-            {% if edit == '1' %}
-            <button type="submit" class="btn btn-primary">Save</button>
-            {% endif %}
-        </form>
+<div class="row">
+    <div class="col-md-12">
+        <section class="panel">
+            <div class="panel-body profile-information">
+                <div class="col-md-3">
+                    <div class="profile-pic text-center">
+                        <img src="/static/images/users/thumbs/{{user.avatar}}" alt="">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="profile-desk">
+                        <h1>{{user.name}}</h1>
+                        <span class="text-muted">{{user.email}}</span>
+                        <p>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean porttitor vestibulum imperdiet. Ut auctor accumsan erat,
+                            a vulputate metus tristique non. Aliquam aliquam vel orci quis sagittis.
+                        </p>
+                        <!--<a href="#" class="btn btn-primary">View Profile</a>-->
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="profile-statistics">
+                        <h1>${{user.balance}}</h1>
+                        <p>Current Balance</p>
+                        <!--<ul>
+                            <li>
+                                <a href="#">
+                                    <i class="fa fa-facebook"></i>
+                                </a>
+                            </li>
+                            <li class="active">
+                                <a href="#">
+                                    <i class="fa fa-twitter"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="fa fa-google-plus"></i>
+                                </a>
+                            </li>
+                        </ul>-->
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
-</section>
+    <div class="col-md-12">
+        <section class="panel">
+            <header class="panel-heading tab-bg-dark-navy-blue">
+                <ul class="nav nav-tabs nav-justified ">
+                    <li class="active">
+                        <a data-toggle="tab" href="#bookings">
+                            Bookings
+                        </a>
+                    </li>
+                    {% if auth.user_role == 1 %}
+                    <li class="">
+                        <a data-toggle="tab" href="#balance">
+                            Balance
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </header>
+            <div class="panel-body">
+                <div class="tab-content tasi-tab">
+                    <div id="bookings" class="tab-pane active">
+                        <section class="cart-product row">
+                            {% for menu in menus %}
 
-<section class="panel">
-    <header class="panel-heading">
-        <h4 class="gen-case">Cart</h4>
-    </header>
-    <div class="panel-body minimal">
+                            <div class="col-md-3">
+                                <div class="ibox">
+                                    <div class="ibox-content product-box">
+                                        <div class="product-imitation" style="background-image:url(/static/images/menus/{{menu.photo}})"></div>
+                                        <div class="product-desc">
+                                            <span class="product-price">${{menu.price}}</span>
+                                            <a class="product-name">{{menu.name}}</a>
+                                            {% if menu.desc != null %}
+                                            <div class="small m-t-xs">{{menu.desc}}</div>
+                                            {% endif %}
+                                            <div class="m-t text-righ">
+                                                {% if menu.status == 0 %}
+                                                <i class="label label-warning">pending</i>
+                                                <a href="{{ url_for('order', mid=menu.id, next='welcome', remove=menu.booking_id) }}" class="label label-primary">
+                                                    <i class="fa fa-trash-o"></i> Remove
+                                                </a>
+                                                {% else %}
+                                                <i class="label label-primary">completed</i>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
+                            {% endfor %}
+                        </section>
+                    </div>
+                    {% if auth.user_role == 1 %}
+                    <div id="balance" class="tab-pane">
+                        <div class="position-center">
+                            <div class="prf-contacts sttng">
+                                <h2> Update Account Balance</h2>
+                            </div>
+                            <form class="form-horizontal" action="{{ url_for('user', card_id=user.card_id) }}" method="POST">
+                                {{ form.csrf_token }}
+                                <div class="form-group">
+                                    <label class="col-lg-2 control-label">Amount</label>
+                                    <div class="col-lg-6">
+                                        {{ form.amount(class="form-control", placeholder="Amount") }}
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-lg-offset-2 col-lg-10">
+                                        {{ form.submit(class="btn btn-primary") }}
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
+
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
     </div>
-</section>
-{% endblock %}
+</div>
+{% if edit == '1' %}
+<button type="submit" class="btn btn-primary">Save</button>
+{% endif %} {% endblock %}

@@ -6,7 +6,7 @@ import serial
 from PIL import Image
 from config import config
 from flask import Flask, render_template, session, redirect, request, url_for, flash
-from forms import LoginForm, MenuItemForm, ChangePasswordForm, UserForm
+from forms import LoginForm, MenuItemForm, ChangePasswordForm, UserForm, UpdateBalanceForm
 from threading import Lock
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from flask_script import Manager
@@ -49,7 +49,10 @@ socketio = SocketIO(app, async_mode=async_mode)
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     user_id = db.Column(db.Integer, primary_key=True)
+    card_id = db.Column(db.Integer)
     name = db.Column(db.Text())
+    balance = db.Column(db.Integer())
+    total_booking_price = db.Column(db.Integer())
     username = db.Column(db.Text())
     password = db.Column(db.Text())
     avatar = db.Column(db.Text())
@@ -158,20 +161,19 @@ def new_menu():
 
     return render_template('new-menu-item.html', auth=current_user, form = form, async_mode=socketio.async_mode)
 
-
 @app.route('/orders')
 @login_required
 def orders():
     menus = db.engine.execute(
             text("SELECT \
-                m.menu_id as id, m.menu_name as name, m.menu_price as price, \
+                b.booking_id, u.card_id, m.menu_id as id, m.menu_name as name, m.menu_price as price, \
                 m.menu_desc as desc, m.menu_photo as photo, b.booking_status as status  \
             FROM \
-                bookings AS b JOIN menus m ON b.menu_id = m.menu_id \
+                bookings AS b JOIN users u ON b.user_id = u.user_id JOIN menus m ON b.menu_id = m.menu_id \
             WHERE \
-                b.user_id = :uid \
+                u.card_id = :id AND b.booking_status = 0 \
             ORDER BY b.created_at ASC LIMIT 100"), {
-                'uid': current_user.user_id
+                'id': current_user.card_id
             })
     
     data = {
@@ -183,20 +185,40 @@ def orders():
 @app.route('/order/<mid>')
 @login_required
 def order(mid):
-    '''order = db.engine.execute(text("SELECT * FROM bookings WHERE user_id = :uid AND menu_id = :mid"), {
-                "uid": current_user.user_id, 
-                "mid": mid
-            }).first()'''
+    menu = db.engine.execute(text("SELECT * FROM menus WHERE menu_id = :id"), {
+                'id': mid
+            }).first()
+    
+    if 'remove' in request.args:
+        total_booking_price = current_user.total_booking_price - menu.menu_price
+        db.engine.execute(text("UPDATE users SET total_booking_price = :tbp WHERE user_id =  :id"), {
+            "id": current_user.user_id, 
+            "tbp": total_booking_price
+        })
 
-    #if order is not None:
-         # save user and the thumbnail name
-    insertSql = "INSERT INTO bookings (user_id, menu_id) VALUES (:uid, :mid)"
-    db.engine.execute(text(insertSql), {
-        "uid": current_user.user_id, 
-        "mid": mid
-    })
+        db.engine.execute(text("DELETE FROM bookings WHERE booking_id = :id"), {
+            "id": request.args.get('remove')
+        })
 
-    flash('Item Book Successfully!.')
+        
+        return redirect(url_for(request.args.get('next')) or url_for('menus'))
+    
+    total_booking_price = current_user.total_booking_price + menu.menu_price
+
+    if current_user.balance >= total_booking_price:
+        db.engine.execute(text("UPDATE users SET total_booking_price = :tbp WHERE user_id =  :id"), {
+            "id": current_user.user_id, 
+            "tbp": total_booking_price
+        })
+
+        db.engine.execute(text("INSERT INTO bookings (user_id, menu_id) VALUES (:uid, :mid)"), {
+            "uid": current_user.user_id, 
+            "mid": mid
+        })
+
+        flash('Item Book Successfully!')
+    else:
+        flash('Account balance is low!')
         
     return redirect(url_for(request.args.get('next')) or url_for('menus'))
 
@@ -253,9 +275,9 @@ def users():
 
     return render_template('users.html', auth=current_user, users=users, trash=trash, active='users')
 
-@app.route('/user/<uid>', methods=['GET'])
+@app.route('/user/<card_id>', methods=['GET', 'POST'])
 @login_required
-def user(uid):
+def user(card_id):
     edit = 0
     if 'edit' in request.args:
         edit = request.args['edit']
@@ -266,25 +288,54 @@ def user(uid):
         # TRASH USER
         if status == '0':
             db.engine.execute(
-                text("UPDATE users SET user_status = 0 WHERE user_id = :id"), {"id": uid})
+                text("UPDATE users SET user_status = 0 WHERE card_id = :id"), {"id": card_id})
             return redirect(url_for(request.args.get('next')) or url_for('user'))
         
         # ENABLE USER
         if status == '1':
             db.engine.execute(
-                text("UPDATE users SET user_status = 1 WHERE user_id = :id"), {"id": uid})
+                text("UPDATE users SET user_status = 1 WHERE card_id = :id"), {"id": card_id})
             return redirect(url_for(request.args.get('next')) or url_for('user'))
 
         # BLOCK USER
         if status == '2':
             db.engine.execute(
-                text("UPDATE users SET user_status = 2 WHERE user_id = :id"), {"id": uid})
+                text("UPDATE users SET user_status = 2 WHERE card_id = :id"), {"id": card_id})
             return redirect(url_for(request.args.get('next')) or url_for('user'))
 
-    user = db.engine.execute(
-        text("SELECT * FROM users WHERE user_id = :id"), {'id': uid}).first()
 
-    return render_template('user.html', auth=current_user, user=user, edit=edit, active='users')
+    form = UpdateBalanceForm()
+    if form.validate_on_submit():
+        u = db.engine.execute(
+            text("SELECT * FROM users WHERE card_id = :id"), {'id': card_id}).first()
+        db.engine.execute(text("UPDATE users SET balance=:balance WHERE card_id = :id"), {
+            "id": u.card_id,
+            "balance": u.balance + form.amount.data
+        })
+
+    user = db.engine.execute(
+        text("SELECT * FROM users WHERE card_id = :id"), {'id': card_id}).first()
+
+    if user is None:
+        if current_user.user_role == 1:
+            return redirect(url_for('new_user', card_id=card_id))
+        else:
+            return redirect(url_for('welcome'))
+            
+
+    menus = db.engine.execute(
+            text("SELECT \
+                b.booking_id, u.card_id, m.menu_id as id, m.menu_name as name, m.menu_price as price, \
+                m.menu_desc as desc, m.menu_photo as photo, b.booking_status as status  \
+            FROM \
+                bookings AS b JOIN users u ON b.user_id = u.user_id JOIN menus m ON b.menu_id = m.menu_id \
+            WHERE \
+                u.card_id = :id AND b.booking_status = 0\
+            ORDER BY b.created_at ASC LIMIT 100"), {
+                'id': card_id
+            })
+
+    return render_template('user.html', auth=current_user, user=user, menus=menus, form = form, edit=edit, active='users')
                 
 
 @app.route('/user/new', methods=['GET', 'POST'])
@@ -343,19 +394,6 @@ def new_user():
     return render_template('new-user.html', form=form, auth=current_user, active='users')
 
 
-'''
-@app.route('/patient/<card_id>')
-@login_required
-def patientInfo(card_id):
-    patient = db.engine.execute(
-        text("SELECT p.*, b.blood_group_name from patients as p \
-        JOIN blood_groups b on p.blood_group_id = b.blood_group_id \
-        WHERE p.card_id=:cardID"), {'cardID': card_id}).first()
-
-    if patient is None:
-        return redirect(url_for('add_patient', card_id=card_id))
-    return render_template('patient-info.html', auth=current_user, async_mode=socketio.async_mode, patient=patient)
-'''
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('errors/404.html'), 404
@@ -380,10 +418,10 @@ def test_connect():
         if thread is None:
             thread = socketio.start_background_task(target=background_thread)
     emit('my_response', {'data': 'Connected', 'count': 0})
-
+'''
 
 #manager = Manager(app)
-'''
+
 if __name__ == '__main__':
     #socketio.run(app, debug=False)
     socketio.run(app)
